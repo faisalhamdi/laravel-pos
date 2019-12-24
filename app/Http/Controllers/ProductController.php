@@ -86,5 +86,53 @@ class ProductController extends Controller
         return redirect()->back()->with(['success' => '<strong>' . $product->name . '</strong> Deleted.!']);
     }
 
+    public function edit($id) {
+        $product = Product::findOrFail($id);
+
+        $categories = Category::orderBy('name', 'ASC')->get();
+
+        return view('products.edit', compact('product', 'categories'));
+    }
+
+    public function update(Request $r, $id) {
+        // validasi data
+        $this->validate($r, [
+            'name' => 'required|string|max:100',
+            'description' => 'nullable|string|max:100',
+            'stock' => 'required|integer',
+            'price' => 'required|integer',
+            'category_id' => 'required|exists:categories,id',
+            'photo' => 'nullable|image|mimes:jpg,png,jpeg'
+        ]);
+
+        try {
+            $product = Product::findOrFail($id);
+            $photo = $product->photo;
+            
+            if ($r->hasFile('photo')) {
+
+                !empty($photo) ? File::delete(public_path('uploads/product/' . $photo)) : null;
+
+                $photo = $this->saveFile($r->name, $r->file('photo'));
+            }
+            
+            $product->update([
+                'name' => $r->name,
+                'description' => $r->description,
+                'stock' => $r->stock,
+                'price' => $r->price,
+                'category_id' => $r->category_id,
+                'photo' => $photo
+            ]);
+
+            return redirect(route('products.index'))
+                    ->with(['success' => '<strong>' . $product->name . '</strong> Updated!']);
+
+        } catch (Exception $e) {
+            return redirect()->back()
+            ->with(['error' => $e->getMessage()]);
+        }
+    }
+
     
 }
