@@ -14,6 +14,11 @@ use Image;
 
 class ProductController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    
     public function index() {
         $products = Product::with('category')->orderBy('created_at', 'DESC')->paginate(10);
 
