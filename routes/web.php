@@ -12,10 +12,29 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect(route('login'));
 });
-Route::resource('categories', 'CategoryController')->except(['create', 'show']);
+Auth::routes();
 
-Route::resource('products', 'ProductController');
+Route::group(['middleware' => 'auth'], function() {
+    Route::resource('categories', 'CategoryController')->except([
+        'create', 'show'
+    ]);
+    Route::resource('products', 'ProductController');
+    Route::get('/home', 'HomeController@index')->name('home');
+
+});
 
 Route::get('/distance', 'TestController@getDistance');
+
+// Route::resource('categories', 'CategoryController')->except(['create', 'show']);
+
+// Route::resource('products', 'ProductController');
+
+// Auth::routes();
+
+// Route::get('/home', 'HomeController@index')->name('home');
+
+// Auth::routes();
+
+// Route::get('/home', 'HomeController@index')->name('home');
