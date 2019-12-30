@@ -55,6 +55,17 @@
                     </ul>
                 </li>
                 @endif
+
+                @role('cashier')
+                <li class="nav-item">
+                    <a href="{{ route('order.transaction') }}" class="nav-link">
+                        <i class="nav-icon fa fa-shopping-cart"></i>
+                        <p>
+                            Transaction
+                        </p>
+                    </a>
+                </li>
+                @endrole
                 
                 @role('admin')
                 <li class="nav-item has-treeview">
