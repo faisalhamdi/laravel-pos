@@ -4,13 +4,11 @@
     <title>Transaction</title>
 @endsection
 ​
-<!-- @section('css')
+@section('css')
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
-@endsection -->
+@endsection
 ​
 @section('content')
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
-
     <div class="content-wrapper">
         <div class="content-header">
             <div class="container-fluid">
@@ -106,63 +104,17 @@
 ​
                             @endslot
                         @endcard
-                    </div>
-                    
-                    <!-- MENAMPILKAN LIST PRODUCT YANG ADA DI KERANJANG -->
-                    <div class="col-md-4">
-                        @card
-                            @slot('title')
-                            Cart
-                            @endslot
-​
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Product</th>
-                                        <th>Price</th>
-                                        <th>Qty</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- MENGGUNAKAN LOOPING VUEJS -->
-                                    <tr v-for="(row, index) in shoppingCart">
-                                        <td>@{{ row.name }} (@{{ row.code }})</td>
-                                        <td>@{{ row.price | currency }}</td>
-                                        <td>@{{ row.qty }}</td>
-                                        <td>
-                                            <!-- EVENT ONCLICK UNTUK MENGHAPUS CART -->
-                                            <button 
-                                                @click.prevent="removeCart(index)"    
-                                                class="btn btn-danger btn-sm">
-                                                <i class="fa fa-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            @slot('footer')
-                            <div class="card-footer text-muted">
-                                <a href="{{ route('order.checkout') }}" 
-                                    class="btn btn-info btn-sm float-right">
-                                    Checkout
-                                </a>
-                            </div>
-                            @endslot
-                        @endcard
-                    </div>
+                    </div>                    
+                    @include('orders.cart')
                 </div>
             </div>
         </section>
     </div>
-
+    
+@endsection
+​
+@section('js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/accounting.js/0.4.1/accounting.min.js"></script>
     <script src="{{ asset('js/transaction.js') }}"></script>
 @endsection
-​
-<!-- @section('js')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/accounting.js/0.4.1/accounting.min.js"></script>
-    <script src="{{ asset('js/transaksi.js') }}"></script>
-@endsection -->
