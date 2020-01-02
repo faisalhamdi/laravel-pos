@@ -359,16 +359,16 @@
                 product_id: '',
                 qty: 1
             },
-            // customer: {
-            //     email: ''
-            // },
+            customer: {
+                email: ''
+            },
             shoppingCart: [],
             submitCart: false,
-            // formCustomer: false,
-            // resultStatus: false,
-            // submitForm: false,
-            // errorMessage: '',
-            // message: ''
+            formCustomer: false,
+            resultStatus: false,
+            submitForm: false,
+            errorMessage: '',
+            message: ''
         },
         watch: {
             'cart.product_id': function cartProduct_id() {
@@ -469,7 +469,7 @@
                 var _this6 = this;
     
                 __WEBPACK_IMPORTED_MODULE_1_axios___default.a.post('/api/customer/search', {
-                    email: this.customer.email
+                    email: this.customer.email                  
                 }).then(function (response) {
                     if (response.data.status == 'success') {
                         _this6.customer = response.data.data;
