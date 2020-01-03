@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Customer;
+use App\Exports\OrderInvoice;
 use App\Order;
 use App\Product;
+use App\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
+use PDF;
 
 class OrderController extends Controller
 {
@@ -167,5 +171,95 @@ class OrderController extends Controller
         }
         //jika belum terdapat records maka akan me-return INV-1
         return 'INV-1';
+    }
+
+    public function index(Request $r) {
+        $customers = Customer::orderBy('name', 'ASC')->get();
+
+        $users = User::role('cashier')->orderBy('name', 'ASC')->get();
+
+        $orders = Order::orderBy('created_at', 'DESC')->with('order_detail', 'customer');
+
+        if (!empty($r->user_id)) {
+            $orders = $orders->where('user_id', $r->user_id);
+        }
+
+        if (!empty($r->start_date) && !empty($r->end_date)) {
+            $this->validate($r, [
+                'start_date' => 'nullable|date',
+                'end_date' => 'nullable|date'
+            ]);
+
+            //START & END DATE DI RE-FORMAT MENJADI Y-m-d H:i:s
+            $start_date = Carbon::parse($r->start_date)->format('Y-m-d') . ' 00:00:01';
+            $end_date = Carbon::parse($r->end_date)->format('Y-m-d') . ' 23:59:59';
+
+            $orders = $orders->whereBetween('created_at', [$start_date, $end_date])->get();
+
+        } else {
+            $orders = $orders->take(10)->skip(0)->get();
+        }
+
+        return view('orders.index', [
+            'orders' => $orders,
+            'sold' => $this->countItem($orders),
+            'total' => $this->countTotal($orders),
+            'total_customer' => $this->countCustomer($orders),
+            'customers' => $customers,
+            'users' => $users
+        ]);
+    }
+
+    private function countCustomer($orders) {
+        $customer = [];
+        if ($orders->count() > 0) {
+            //DI-LOOPING UNTUK MENYIMPAN EMAIL KE DALAM ARRAY
+            foreach ($orders as $row) {
+                $customer[] = $row->customer->email;
+            }
+        }
+        //MENGHITUNG TOTAL DATA YANG ADA DI DALAM ARRAY
+        //DIMANA DATA YANG DUPLICATE AKAN DIHAPUS MENGGUNAKAN ARRAY_UNIQUE
+        return count(array_unique($customer));
+    }
+
+    private function countTotal($orders) {
+        $total = 0;        
+        if ($orders->count() > 0) {
+            //MENGAMBIL VALUE DARI TOTAL -> PLUCK() AKAN MENGUBAHNYA MENJADI ARRAY
+            $sub_total = $orders->pluck('total')->all();
+
+            //KEMUDIAN DATA YANG ADA DIDALAM ARRAY DIJUMLAHKAN
+            $total = array_sum($sub_total);
+        }
+
+        return $total;
+    }
+
+    private function countItem($orders) {
+        $data = 0;
+        if ($orders->count() > 0) {
+            foreach ($orders as $row) {
+                $qty = $row->order_detail->pluck('qty')->all();
+                $val = array_sum($qty);
+                $data += $val;
+            }
+        }
+        return $data;
+    }
+
+    public function invoicePdf($invoice) {
+        $order = Order::where('invoice', $invoice)->with('customer', 'order_detail', 'order_detail.product')->first();
+
+        //SET CONFIG PDF MENGGUNAKAN FONT SANS-SERIF
+        //DENGAN ME-LOAD VIEW INVOICE.BLADE.PHP
+        $pdf = PDF::setOptions(['dpi=' => 150, 'defaultFont' => 'sans-serif'])
+            ->loadView('orders.report.invoice', compact('order'));
+
+        return $pdf->stream();
+    }
+    
+    public function invoiceExcel($invoice) {
+        return (new OrderInvoice($invoice))->download('invoice-' . $invoice . '.xlsx');
     }
 }
