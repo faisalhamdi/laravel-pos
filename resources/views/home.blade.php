@@ -23,60 +23,72 @@
         </div>
 ​
         <!-- Main content -->
-        <section class="content">
+        <section class="content" id="app">
             <div class="container-fluid">
+                
+                <!-- ABAIKAN DULU LINE INI KARENA AKAN DI MODIFIKASI SELANJUTNYA -->
                 <div class="row">
                     <div class="col-lg-3 col-6">
                         <div class="small-box bg-info">
                             <div class="inner">
-                                <h3>0</h3>
+                                <h3>{{ $product }}</h3>
                                 <p>Products</p>
                             </div>
                             <div class="icon">
                                 <i class="ion ion-bag"></i>
                             </div>
-                            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                            
                         </div>
                     </div>
 ​
                     <div class="col-lg-3 col-6">
                         <div class="small-box bg-success">
                             <div class="inner">
-                                <h3>0<sup style="font-size: 20px">%</sup></h3>
+                                <h3>{{ $order }}</h3>
                                 <p>Orders</p>
                             </div>
                             <div class="icon">
                                 <i class="ion ion-stats-bars"></i>
                             </div>
-                            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                            
                         </div>
                     </div>
                     <div class="col-lg-3 col-6">
                         <div class="small-box bg-warning">
                             <div class="inner">
-                                <h3>0</h3>
+                                <h3>{{ $customer }}</h3>
                                 <p>Customers</p>
                             </div>
                             <div class="icon">
                                 <i class="ion ion-person-add"></i>
                             </div>
-                            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
                     <div class="col-lg-3 col-6">
                         <div class="small-box bg-danger">
                             <div class="inner">
-                                <h3>0</h3>
-                                <p>Users</p>
+                                <h3>{{ $user }}</h3>
+                                <p>Employee</p>
                             </div>
                             <div class="icon">
                                 <i class="ion ion-pie-graph"></i>
                             </div>
-                            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
+                </div>
+                <!-- SAMPAI LINE INI -->
+                
+                <!-- YANG PERLU DIPERHATIKAN ADALAH LINE DIBAWAH -->
+                <div class="row">
+                    <!-- CHART.JS MEMINTA ELEMENT YANG MEMILIKI ID dw-chart -->
+                    <canvas id="pos-chart"></canvas>
                 </div>
             </div>
         </section>
     </div>
+@endsection
+
+@section('js')
+    <!-- LOAD FILE dashboard.js -->
+    <script src="{{ asset('js/dashboard.js') }}"></script>
 @endsection
